@@ -19,7 +19,8 @@ export interface TravelPlan {
   readonly endLocation: string;
   readonly startDate: string;
   readonly endDate: string;
-  readonly carId: number;
+  readonly car: Car;
+  readonly employees: Employee[];
 }
 
 interface TravelPlanRequest {

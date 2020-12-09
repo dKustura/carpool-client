@@ -17,5 +17,10 @@ export const useStyles = makeStyles((theme: Theme) => {
     cardHeader: {
       paddingBottom: '1rem',
     },
+    typographyWithIcon: {
+      display: 'flex',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+    },
   });
 });
