@@ -58,6 +58,9 @@ export const lightTheme = responsiveFontSizes(
       h1: {
         fontWeight: 700,
       },
+      h4: {
+        fontWeight: 700,
+      },
       h6: {
         fontWeight: 700,
       },

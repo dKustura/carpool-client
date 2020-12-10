@@ -5,5 +5,8 @@ export const useStyles = makeStyles((theme: Theme) => {
     title: {
       padding: '2rem',
     },
+    form: {
+      padding: '2rem',
+    },
   });
 });
