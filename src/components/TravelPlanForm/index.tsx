@@ -33,7 +33,9 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
           <Grid item xs={12} sm={8}>
             <Formik
               initialValues={DEFAULT_FORM_VALUES}
-              validate={(values) => validate(values, employees, travelPlans)}
+              validate={(values) =>
+                validate(values, cars, employees, travelPlans)
+              }
               onSubmit={() => {
                 return;
               }}
@@ -114,34 +116,32 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         field,
                         meta: { touched, error },
                       }: FieldProps<TravelPlanSchemaType>) => (
-                        <>
-                          <Autocomplete
-                            multiple
-                            disableCloseOnSelect
-                            options={employees}
-                            getOptionLabel={(option) => option.name}
-                            filterSelectedOptions
-                            onChange={(event, newValue) => {
-                              form.setFieldValue(
-                                field.name,
-                                newValue.map((value) => value.employeeId),
-                              );
-                            }}
-                            onBlur={(e) => {
-                              field.onBlur(e);
-                              form.setFieldTouched(field.name);
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                variant="outlined"
-                                label="Employees"
-                                error={touched && !!error}
-                                helperText={touched && error ? error : ' '}
-                              />
-                            )}
-                          />
-                        </>
+                        <Autocomplete
+                          multiple
+                          disableCloseOnSelect
+                          options={employees}
+                          getOptionLabel={(option) => option.name}
+                          filterSelectedOptions
+                          onChange={(_, newValue) => {
+                            form.setFieldValue(
+                              field.name,
+                              newValue.map((value) => value.employeeId),
+                            );
+                          }}
+                          onBlur={(e) => {
+                            field.onBlur(e);
+                            form.setFieldTouched(field.name);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              variant="outlined"
+                              label="Employees"
+                              error={touched && !!error}
+                              helperText={touched && error ? error : ' '}
+                            />
+                          )}
+                        />
                       )}
                     </Field>
                   </Grid>

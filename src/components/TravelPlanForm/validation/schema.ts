@@ -1,6 +1,11 @@
 import * as yup from 'yup';
 import { MAX_LOCATION_LENGTH } from './constants';
-import { isCarAvailable, isEmployeeDriver } from './helpers';
+import {
+  hasEnoughSeats,
+  isCarAvailable,
+  isEmployeeAvailable,
+  isEmployeeDriver,
+} from './helpers';
 
 export const travelPlanSchema = yup.object({
   startLocation: yup
@@ -47,16 +52,14 @@ export const travelPlanSchema = yup.object({
             'is-car-available',
             'Car is not available during selected dates.',
             (id: number | undefined, context: any) => {
-              if (id) {
-                return isCarAvailable(
-                  id,
-                  startDate,
-                  endDate,
-                  context.options.context.travelPlans,
-                );
-              }
+              if (!id) return false;
 
-              return false;
+              return isCarAvailable(
+                id,
+                startDate,
+                endDate,
+                context.options.context.travelPlans,
+              );
             },
           )
         );
@@ -66,20 +69,59 @@ export const travelPlanSchema = yup.object({
     .array()
     .of(yup.number().required())
     .required('Employees are required.')
+    .when(
+      'carId',
+      (carId: number, schema: any) =>
+        carId &&
+        schema.test(
+          'has-enough-capacity',
+          'Car does not have enough seats for the number of employees.',
+          (ids: number[] | undefined, context: any) => {
+            if (!ids) return false;
+
+            return hasEnoughSeats(
+              carId,
+              context.options.context.cars,
+              ids.length,
+            );
+          },
+        ),
+    )
+    .when(
+      ['startDate', 'endDate'],
+      // @ts-ignore
+      (startDate: any, endDate: any, schema: any) =>
+        startDate &&
+        endDate &&
+        schema.test(
+          'are-employees-available',
+          'All employees must be available during selected dates.',
+          (ids: number[] | undefined, context: any) => {
+            if (!ids) return false;
+
+            return ids.every(
+              (id) =>
+                id &&
+                isEmployeeAvailable(
+                  id,
+                  startDate,
+                  endDate,
+                  context.options.context.travelPlans,
+                ),
+            );
+          },
+        ),
+    )
     .test(
       'has-driver',
       'Employees must have at least one driver.',
-      (ids: number[], context: any) => {
-        if (ids) {
-          return ids.some(
+      (ids: number[] | undefined, context: any) => {
+        return (
+          ids?.some(
             (id) =>
               id && isEmployeeDriver(id, context.options.context.employees),
-          );
-        }
-        return false;
+          ) || false
+        );
       },
     ),
-  // TODO: Add missing validations
-  // check if employees are available
-  // check if number of employees is <= car capacity
 });
