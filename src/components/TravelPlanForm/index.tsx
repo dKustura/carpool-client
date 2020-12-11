@@ -1,12 +1,11 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
 import React from 'react';
-import Select from 'react-select';
 
 // Components
-import { FormHelperText, Grid, TextField, Typography } from '@material-ui/core';
+import { Grid, TextField, Typography } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 // Validation
-import { travelPlanSchema } from './validation/schema';
 import { TravelPlanSchemaType } from './validation/types';
 
 // Helpers
@@ -15,7 +14,7 @@ import { useStyles } from './styles';
 import { Car, Employee, TravelPlan } from 'api';
 import { validate } from './validation';
 
-export interface Props {
+interface Props {
   readonly cars: Car[];
   readonly employees: Employee[];
   readonly travelPlans: TravelPlan[];
@@ -34,7 +33,6 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
           <Grid item xs={12} sm={8}>
             <Formik
               initialValues={DEFAULT_FORM_VALUES}
-              // validationSchema={travelPlanSchema}
               validate={(values) => validate(values, employees, travelPlans)}
               onSubmit={() => {
                 return;
@@ -85,23 +83,64 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         field,
                         meta: { touched, error },
                       }: FieldProps<TravelPlanSchemaType>) => (
+                        <Autocomplete
+                          options={cars}
+                          getOptionLabel={(option) => option.name}
+                          onChange={(_, newValue) => {
+                            form.setFieldValue(field.name, newValue?.carId);
+                          }}
+                          onBlur={(e) => {
+                            field.onBlur(e);
+                            form.setFieldTouched(field.name);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              fullWidth
+                              label="Select Car"
+                              variant="outlined"
+                              error={touched && !!error}
+                              helperText={touched && error ? error : ' '}
+                            />
+                          )}
+                        />
+                      )}
+                    </Field>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Field name="employeeIds">
+                      {({
+                        form,
+                        field,
+                        meta: { touched, error },
+                      }: FieldProps<TravelPlanSchemaType>) => (
                         <>
-                          <Select
-                            name={field.name}
+                          <Autocomplete
+                            multiple
+                            disableCloseOnSelect
+                            options={employees}
+                            getOptionLabel={(option) => option.name}
+                            filterSelectedOptions
+                            onChange={(event, newValue) => {
+                              form.setFieldValue(
+                                field.name,
+                                newValue.map((value) => value.employeeId),
+                              );
+                            }}
                             onBlur={(e) => {
                               field.onBlur(e);
                               form.setFieldTouched(field.name);
                             }}
-                            onChange={(option) =>
-                              form.setFieldValue(field.name, option?.carId)
-                            }
-                            options={cars}
-                            getOptionLabel={(car) => car.name}
-                            getOptionValue={(car) => car.carId.toString()}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                variant="outlined"
+                                label="Employees"
+                                error={touched && !!error}
+                                helperText={touched && error ? error : ' '}
+                              />
+                            )}
                           />
-                          <FormHelperText error={!!error} variant="outlined">
-                            {touched && error ? error : ' '}
-                          </FormHelperText>
                         </>
                       )}
                     </Field>

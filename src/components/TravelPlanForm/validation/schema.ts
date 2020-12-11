@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { Props as TravelPlanFormProps } from '..';
 import { MAX_LOCATION_LENGTH } from './constants';
 import { isCarAvailable, isEmployeeDriver } from './helpers';
 
@@ -18,9 +17,15 @@ export const travelPlanSchema = yup.object({
       `End location must be at most ${MAX_LOCATION_LENGTH} characters long.`,
     )
     .required('End location is required.'),
-  startDate: yup.date().required('Start date is required.'),
+  startDate: yup
+    .date()
+    .nullable()
+    .transform((current, original) => (original === '' ? null : current))
+    .required('Start date is required.'),
   endDate: yup
     .date()
+    .nullable()
+    .transform((current, original) => (original === '' ? null : current))
     .when('startDate', (startDate: Date) => {
       return yup
         .date()
@@ -29,6 +34,7 @@ export const travelPlanSchema = yup.object({
     .required('End date is required.'),
   carId: yup
     .number()
+    .nullable()
     .required('Car is required.')
     .when(
       ['startDate', 'endDate'],

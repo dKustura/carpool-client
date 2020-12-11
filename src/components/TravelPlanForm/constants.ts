@@ -5,6 +5,5 @@ export const DEFAULT_FORM_VALUES: TravelPlanSchemaType = {
   endLocation: '',
   startDate: new Date(),
   endDate: new Date(),
-  carId: 0,
   employeeIds: [],
 };
