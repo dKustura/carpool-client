@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import {
+  Button,
   Grid,
   Theme,
   Tooltip,
@@ -12,17 +13,21 @@ import { TravelPlan } from 'api/types';
 import CarCard from 'components/CarCard';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 // Helpers
 import { useStyles } from './styles';
+import React from 'react';
 
 interface Props {
   readonly travelPlan: TravelPlan;
+  readonly onDelete: () => void;
 }
 
 const localeOptions = { locale: 'hr', ...DateTime.DATE_SHORT };
 
-const TravelPlanCard = ({ travelPlan }: Props) => {
+const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
   const classes = useStyles();
 
   const formattedStartDate = DateTime.fromISO(
@@ -103,6 +108,27 @@ const TravelPlanCard = ({ travelPlan }: Props) => {
       >
         <Grid item>
           <CarCard car={travelPlan.car} />
+        </Grid>
+        <Grid container justify="space-around">
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<EditIcon />}
+            >
+              Edit
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={onDelete}
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     </Grid>

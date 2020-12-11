@@ -10,5 +10,8 @@ export const useStyles = makeStyles((theme: Theme) => {
       // transition: 'box-shadow 0.2s ease-in-out',
       borderRadius: 15,
     },
+    title: {
+      paddingBottom: '2rem',
+    },
   });
 });

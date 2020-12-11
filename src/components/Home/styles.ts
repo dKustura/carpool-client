@@ -8,5 +8,8 @@ export const useStyles = makeStyles((theme: Theme) => {
     form: {
       padding: '2rem',
     },
+    travelPlans: {
+      padding: '2rem',
+    },
   });
 });

@@ -20,10 +20,10 @@ export const lightTheme = responsiveFontSizes(
         paper: colors.white,
       },
       primary: {
-        main: colors.orange,
+        main: colors.gunMetalBlue,
       },
       secondary: {
-        main: colors.gunMetalBlue,
+        main: colors.orange,
       },
       success: {
         main: colors.success,

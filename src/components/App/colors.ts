@@ -5,7 +5,7 @@ export default {
   info: '#274C68',
   black: '#000000',
   white: '#FFFFFF',
-  orange: '#FF5A00',
+  orange: '#697A21',
   gunMetalBlue: '#263746',
   azureBlue: '#EEFAFB',
 };

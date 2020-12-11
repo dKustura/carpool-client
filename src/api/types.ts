@@ -26,8 +26,8 @@ export interface TravelPlan {
 interface TravelPlanRequest {
   startLocation: string;
   endLocation: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | Date;
+  endDate: string | Date;
   carId: number;
   employeeIds: number[];
 }

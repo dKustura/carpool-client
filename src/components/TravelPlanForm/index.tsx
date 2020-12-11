@@ -1,9 +1,17 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 
 // Components
-import { Grid, TextField, Typography } from '@material-ui/core';
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+import SendIcon from '@material-ui/icons/Send';
 
 // Validation
 import { TravelPlanSchemaType } from './validation/types';
@@ -11,7 +19,13 @@ import { TravelPlanSchemaType } from './validation/types';
 // Helpers
 import { DEFAULT_FORM_VALUES } from './constants';
 import { useStyles } from './styles';
-import { Car, Employee, TravelPlan } from 'api';
+import {
+  Car,
+  createTravelPlan,
+  Employee,
+  TravelPlan,
+  TravelPlanCreateRequest,
+} from 'api';
 import { validate } from './validation';
 
 interface Props {
@@ -21,13 +35,17 @@ interface Props {
 }
 
 const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const classes = useStyles();
 
   return (
     <div className={classes.formContainer}>
-      <Grid container direction="column" spacing={2} alignItems="center">
-        <Grid item xs={12}>
-          <Typography variant="h4">Create a Travel Plan</Typography>
+      <Grid container direction="column" alignItems="center">
+        <Grid item xs={12} className={classes.title}>
+          <Typography variant="h4" align="center">
+            Create a Travel Plan
+          </Typography>
         </Grid>
         <Grid container justify="center">
           <Grid item xs={12} sm={8}>
@@ -36,13 +54,29 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
               validate={(values) =>
                 validate(values, cars, employees, travelPlans)
               }
-              onSubmit={() => {
-                return;
+              onSubmit={async (values, actions) => {
+                setIsSubmitting(true);
+
+                const createRequest: TravelPlanCreateRequest = {
+                  startLocation: values.startLocation!,
+                  endLocation: values.endLocation!,
+                  startDate: values.startDate!,
+                  endDate: values.endDate!,
+                  carId: values.carId!,
+                  employeeIds: values.employeeIds!,
+                };
+
+                try {
+                  await createTravelPlan(createRequest);
+                } finally {
+                  setIsSubmitting(false);
+                  actions.setSubmitting(false);
+                }
               }}
             >
               <Form>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                <Grid container spacing={2} justify="center">
+                  <Grid item xs={12} md={6}>
                     <Field name="startLocation">
                       {({
                         field,
@@ -60,7 +94,7 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                       )}
                     </Field>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} md={6}>
                     <Field name="endLocation">
                       {({
                         field,
@@ -78,7 +112,79 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                       )}
                     </Field>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} md={6}>
+                    <Field name="startDate">
+                      {({
+                        form,
+                        field,
+                        meta: { touched, error },
+                      }: FieldProps<TravelPlanSchemaType>) => (
+                        <KeyboardDatePicker
+                          name={field.name}
+                          fullWidth
+                          inputVariant="outlined"
+                          variant="inline"
+                          format="MM.dd.yyyy"
+                          label="Start Date"
+                          value={field.value}
+                          onBlur={(e) => {
+                            field.onBlur(e);
+                            form.setFieldTouched('startDate');
+                            form.setFieldTouched('endDate');
+                          }}
+                          onClose={() => {
+                            form.setFieldTouched('startDate');
+                            form.setFieldTouched('endDate');
+                          }}
+                          onChange={(date) => {
+                            form.setFieldValue(field.name, date);
+                          }}
+                          KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                          }}
+                          error={touched && !!error}
+                          helperText={touched && error ? error : ' '}
+                        />
+                      )}
+                    </Field>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Field name="endDate">
+                      {({
+                        form,
+                        field,
+                        meta: { touched, error },
+                      }: FieldProps<TravelPlanSchemaType>) => (
+                        <KeyboardDatePicker
+                          name={field.name}
+                          fullWidth
+                          inputVariant="outlined"
+                          variant="inline"
+                          format="MM.dd.yyyy"
+                          label="End Date"
+                          value={field.value}
+                          onBlur={(e) => {
+                            field.onBlur(e);
+                            form.setFieldTouched('startDate');
+                            form.setFieldTouched('endDate');
+                          }}
+                          onClose={() => {
+                            form.setFieldTouched('startDate');
+                            form.setFieldTouched('endDate');
+                          }}
+                          onChange={(date) => {
+                            form.setFieldValue(field.name, date);
+                          }}
+                          KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                          }}
+                          error={touched && !!error}
+                          helperText={touched && error ? error : ' '}
+                        />
+                      )}
+                    </Field>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
                     <Field name="carId">
                       {({
                         form,
@@ -109,7 +215,7 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                       )}
                     </Field>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} md={6}>
                     <Field name="employeeIds">
                       {({
                         form,
@@ -144,6 +250,26 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         />
                       )}
                     </Field>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={isSubmitting}
+                      startIcon={<SendIcon />}
+                      fullWidth
+                    >
+                      {isSubmitting ? (
+                        <CircularProgress
+                          color="secondary"
+                          size={24}
+                          thickness={6}
+                        />
+                      ) : (
+                        'Submit'
+                      )}
+                    </Button>
                   </Grid>
                 </Grid>
               </Form>

@@ -8,6 +8,7 @@ import TravelPlanForm from 'components/TravelPlanForm';
 // Helpers
 import {
   Car,
+  deleteTravelPlan,
   Employee,
   getCars,
   getEmployees,
@@ -23,23 +24,30 @@ const Home = () => {
   const [employees, setEmployees] = useState<Employee[]>(employeesData);
   const classes = useStyles();
 
-  // const fetchTravelPlans = () => {
-  //   getTravelPlans().then((travelPlans) => {
-  //     setTravelPlans(travelPlans.data);
-  //   });
-  // };
+  const getDeleteHandler = (travelPlanId: number) => {
+    return async () => {
+      await deleteTravelPlan(travelPlanId);
+      fetchTravelPlans();
+    };
+  };
 
-  // const fetchCars = () => {
-  //   getCars().then((cars) => {
-  //     setCars(cars.data);
-  //   });
-  // };
+  const fetchTravelPlans = () => {
+    getTravelPlans().then((travelPlans) => {
+      setTravelPlans(travelPlans.data);
+    });
+  };
 
-  // const fetchEmployees = () => {
-  //   getEmployees().then((employees) => {
-  //     setEmployees(employees.data);
-  //   });
-  // };
+  const fetchCars = () => {
+    getCars().then((cars) => {
+      setCars(cars.data);
+    });
+  };
+
+  const fetchEmployees = () => {
+    getEmployees().then((employees) => {
+      setEmployees(employees.data);
+    });
+  };
 
   // useEffect(() => {
   //   fetchTravelPlans();
@@ -54,7 +62,7 @@ const Home = () => {
           <Typography variant="h1">Carpool Manager</Typography>
         </Grid>
         <Grid container justify="center" className={classes.form}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={10}>
             <TravelPlanForm
               employees={employees}
               cars={cars}
@@ -62,10 +70,13 @@ const Home = () => {
             />
           </Grid>
         </Grid>
-        <Grid container justify="center">
+        <Grid container justify="center" className={classes.travelPlans}>
           {travelPlans.map((travelPlan) => (
             <Grid item key={travelPlan.travelPlanId} xs={12} sm={10} md={6}>
-              <TravelPlanCard travelPlan={travelPlan} />
+              <TravelPlanCard
+                travelPlan={travelPlan}
+                onDelete={getDeleteHandler(travelPlan.travelPlanId)}
+              />
             </Grid>
           ))}
         </Grid>

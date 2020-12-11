@@ -74,3 +74,6 @@ const isOverlappingAnyTravelPlan = (
       isDateBewteenDates(endDate, tp.startDate, tp.endDate),
   );
 };
+
+export const isValidDate = (d: any) =>
+  d && d instanceof Date && !isNaN(d.valueOf());
