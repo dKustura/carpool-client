@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import {
   Button,
+  CircularProgress,
   Grid,
   Theme,
   Tooltip,
@@ -18,16 +19,17 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 // Helpers
 import { useStyles } from './styles';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Props {
   readonly travelPlan: TravelPlan;
-  readonly onDelete: () => void;
+  readonly onDelete: () => Promise<void>;
 }
 
 const localeOptions = { locale: 'hr', ...DateTime.DATE_SHORT };
 
 const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const classes = useStyles();
 
   const formattedStartDate = DateTime.fromISO(
@@ -38,12 +40,18 @@ const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
   );
 
   const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('xs'),
+    theme.breakpoints.down('sm'),
   );
+
+  const onDeleteClick = async () => {
+    setIsDeleting(true);
+    await onDelete();
+    setIsDeleting(false);
+  };
 
   return (
     <Grid container className={classes.card}>
-      <Grid container item xs={12} sm={6}>
+      <Grid container item xs={12} md={6} className={classes.infoContainer}>
         <Grid container className={classes.cardHeader}>
           <Grid
             container
@@ -104,12 +112,12 @@ const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
         justify={isSmallScreen ? 'center' : 'flex-start'}
         item
         xs={12}
-        sm={6}
+        md={6}
       >
         <Grid item>
           <CarCard car={travelPlan.car} />
         </Grid>
-        <Grid container justify="space-around">
+        <Grid container justify="center" spacing={2}>
           <Grid item>
             <Button
               variant="contained"
@@ -123,10 +131,14 @@ const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={onDelete}
+              onClick={onDeleteClick}
               startIcon={<DeleteIcon />}
             >
-              Delete
+              {isDeleting ? (
+                <CircularProgress color="secondary" size={24} thickness={6} />
+              ) : (
+                'Delete'
+              )}
             </Button>
           </Grid>
         </Grid>

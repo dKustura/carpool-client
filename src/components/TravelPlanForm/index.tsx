@@ -19,23 +19,20 @@ import { TravelPlanSchemaType } from './validation/types';
 // Helpers
 import { DEFAULT_FORM_VALUES } from './constants';
 import { useStyles } from './styles';
-import {
-  Car,
-  createTravelPlan,
-  Employee,
-  TravelPlan,
-  TravelPlanCreateRequest,
-} from 'api';
+import { Car, Employee, TravelPlan, TravelPlanCreateRequest } from 'api';
 import { validate } from './validation';
 
 interface Props {
   readonly cars: Car[];
   readonly employees: Employee[];
   readonly travelPlans: TravelPlan[];
+  readonly onSubmit: (values: TravelPlanCreateRequest) => Promise<void>;
 }
 
-const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
+const TravelPlanForm = ({ cars, employees, travelPlans, onSubmit }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
 
   const classes = useStyles();
 
@@ -66,12 +63,15 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                   employeeIds: values.employeeIds!,
                 };
 
-                try {
-                  await createTravelPlan(createRequest);
-                } finally {
-                  setIsSubmitting(false);
-                  actions.setSubmitting(false);
-                }
+                await onSubmit(createRequest);
+
+                setIsSubmitting(false);
+                actions.setSubmitting(false);
+                actions.resetForm();
+
+                // This is neccessary because <Autocomplete> component is still in development
+                setSelectedEmployees(DEFAULT_FORM_VALUES.employeeIds);
+                setSelectedCar(null);
               }}
             >
               <Form>
@@ -122,9 +122,10 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         <KeyboardDatePicker
                           name={field.name}
                           fullWidth
+                          autoOk
                           inputVariant="outlined"
                           variant="inline"
-                          format="MM.dd.yyyy"
+                          format="dd.MM.yyyy"
                           label="Start Date"
                           value={field.value}
                           onBlur={(e) => {
@@ -158,9 +159,10 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         <KeyboardDatePicker
                           name={field.name}
                           fullWidth
+                          autoOk
                           inputVariant="outlined"
                           variant="inline"
-                          format="MM.dd.yyyy"
+                          format="dd.MM.yyyy"
                           label="End Date"
                           value={field.value}
                           onBlur={(e) => {
@@ -191,27 +193,33 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         field,
                         meta: { touched, error },
                       }: FieldProps<TravelPlanSchemaType>) => (
-                        <Autocomplete
-                          options={cars}
-                          getOptionLabel={(option) => option.name}
-                          onChange={(_, newValue) => {
-                            form.setFieldValue(field.name, newValue?.carId);
-                          }}
-                          onBlur={(e) => {
-                            field.onBlur(e);
-                            form.setFieldTouched(field.name);
-                          }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              fullWidth
-                              label="Select Car"
-                              variant="outlined"
-                              error={touched && !!error}
-                              helperText={touched && error ? error : ' '}
-                            />
-                          )}
-                        />
+                        <>
+                          <Autocomplete
+                            options={cars}
+                            value={selectedCar}
+                            getOptionLabel={(option) => {
+                              return option.name;
+                            }}
+                            onChange={(_, newValue) => {
+                              form.setFieldValue(field.name, newValue?.carId);
+                              setSelectedCar(newValue);
+                            }}
+                            onBlur={(e) => {
+                              field.onBlur(e);
+                              form.setFieldTouched(field.name);
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                fullWidth
+                                label="Select Car"
+                                variant="outlined"
+                                error={touched && !!error}
+                                helperText={touched && error ? error : ' '}
+                              />
+                            )}
+                          />
+                        </>
                       )}
                     </Field>
                   </Grid>
@@ -225,6 +233,7 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                         <Autocomplete
                           multiple
                           disableCloseOnSelect
+                          value={selectedEmployees}
                           options={employees}
                           getOptionLabel={(option) => option.name}
                           filterSelectedOptions
@@ -233,6 +242,7 @@ const TravelPlanForm = ({ cars, employees, travelPlans }: Props) => {
                               field.name,
                               newValue.map((value) => value.employeeId),
                             );
+                            setSelectedEmployees(newValue);
                           }}
                           onBlur={(e) => {
                             field.onBlur(e);

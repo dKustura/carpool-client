@@ -11,5 +11,8 @@ export const useStyles = makeStyles((theme: Theme) => {
     travelPlans: {
       padding: '2rem',
     },
+    loadingIndicator: {
+      marginTop: theme.spacing(10),
+    },
   });
 });

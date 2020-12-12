@@ -52,14 +52,21 @@ export const hasEnoughSeats = (
   );
 };
 
+const toUtcDate = (d: Date | string) => {
+  const date = new Date(d);
+  return new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
+  );
+};
+
 const isDateBewteenDates = (
   date: Date | string,
   start: Date | string,
   end: Date | string,
 ) => {
-  const dateDate = new Date(date);
-  const startDate = new Date(start);
-  const endDate = new Date(end);
+  const dateDate = toUtcDate(date);
+  const startDate = toUtcDate(start);
+  const endDate = toUtcDate(end);
   return dateDate >= startDate && dateDate <= endDate;
 };
 

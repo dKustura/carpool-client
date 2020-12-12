@@ -16,29 +16,36 @@ const CarCard = ({ car }: Props) => {
 
   return (
     <div style={{ position: 'relative', height: '14rem' }}>
-      <Grid container justify="center">
-        <Grid item className={classes.licensePlate}>
-          {car.licensePlate}
+      <Grid
+        container
+        direction="column"
+        justify="space-evenly"
+        style={{ height: '100%' }}
+      >
+        <Grid container justify="center">
+          <Grid item className={classes.licensePlate}>
+            {car.licensePlate}
+          </Grid>
         </Grid>
-        <Grid item>
-          <Typography variant="body2" align="center">
+        <Grid item className={classes.nameContainer}>
+          <Typography
+            variant="h6"
+            align="center"
+            className={classes.nameTypography}
+          >
             {car.name}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography variant="body2" align="center">
+          <Typography
+            variant="body2"
+            align="center"
+            className={classes.capacityTypography}
+          >
             Number of seats: {car.capacity}
           </Typography>
         </Grid>
-        <div
-          style={{
-            position: 'absolute',
-            top: '10%',
-            left: '25%',
-            width: '100%',
-          }}
-          className={classes.carImage}
-        >
+        <div className={classes.carImage}>
           <Grid container justify="center">
             <Grid item>
               <CarSvg color={car.color} />

@@ -1,85 +1,141 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 // Components
-import { Container, Grid, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import TravelPlanCard from 'components/TravelPlanCard';
 import TravelPlanForm from 'components/TravelPlanForm';
 
 // Helpers
 import {
   Car,
+  createTravelPlan,
   deleteTravelPlan,
   Employee,
   getCars,
   getEmployees,
   getTravelPlans,
   TravelPlan,
+  TravelPlanCreateRequest,
 } from 'api';
 import { useStyles } from './styles';
-import { carsData, employeesData, travelPlansData } from './data';
+// import { carsData, employeesData, travelPlansData } from './data';
 
 const Home = () => {
-  const [travelPlans, setTravelPlans] = useState<TravelPlan[]>(travelPlansData);
-  const [cars, setCars] = useState<Car[]>(carsData);
-  const [employees, setEmployees] = useState<Employee[]>(employeesData);
+  const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const classes = useStyles();
 
   const getDeleteHandler = (travelPlanId: number) => {
     return async () => {
-      await deleteTravelPlan(travelPlanId);
-      fetchTravelPlans();
+      try {
+        await deleteTravelPlan(travelPlanId);
+        fetchTravelPlans();
+        toast.success('🗑️ Travel plan deleted.');
+      } catch (e) {
+        toast.error('❌ Error while deleting the travel plan.');
+      }
     };
   };
 
-  const fetchTravelPlans = () => {
-    getTravelPlans().then((travelPlans) => {
+  const fetchTravelPlans = async () => {
+    try {
+      const travelPlans = await getTravelPlans();
       setTravelPlans(travelPlans.data);
-    });
+    } catch (e) {
+      toast.error('❌ Error while loading travel plans.');
+    }
   };
 
-  const fetchCars = () => {
-    getCars().then((cars) => {
+  const fetchCars = async () => {
+    try {
+      const cars = await getCars();
       setCars(cars.data);
-    });
+    } catch (e) {
+      toast.error('❌ Error while loading cars.');
+    }
   };
 
-  const fetchEmployees = () => {
-    getEmployees().then((employees) => {
+  const fetchEmployees = async () => {
+    try {
+      const employees = await getEmployees();
       setEmployees(employees.data);
-    });
+    } catch (e) {
+      toast.error('❌ Error while loading employees.');
+    }
   };
 
-  // useEffect(() => {
-  //   fetchTravelPlans();
-  //   fetchCars();
-  //   fetchEmployees();
-  // }, []);
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all([fetchTravelPlans(), fetchCars(), fetchEmployees()]).then(
+      () => {
+        setIsLoading(false);
+      },
+    );
+  }, []);
+
+  const onCreationFormSubmit = async (
+    createRequest: TravelPlanCreateRequest,
+  ) => {
+    try {
+      await createTravelPlan(createRequest);
+      fetchTravelPlans();
+      toast.success('✔️ Travel plan created.');
+    } catch (e) {
+      toast.error('❌ Error while creating the travel plan.');
+    }
+  };
 
   return (
     <Container maxWidth="lg">
       <Grid container justify="center">
         <Grid item className={classes.title}>
-          <Typography variant="h1">Carpool Manager</Typography>
+          <Typography variant="h1" align="center">
+            Carpool Manager
+          </Typography>
         </Grid>
-        <Grid container justify="center" className={classes.form}>
-          <Grid item xs={12} sm={10}>
-            <TravelPlanForm
-              employees={employees}
-              cars={cars}
-              travelPlans={travelPlans}
-            />
-          </Grid>
-        </Grid>
-        <Grid container justify="center" className={classes.travelPlans}>
-          {travelPlans.map((travelPlan) => (
-            <Grid item key={travelPlan.travelPlanId} xs={12} sm={10} md={6}>
-              <TravelPlanCard
-                travelPlan={travelPlan}
-                onDelete={getDeleteHandler(travelPlan.travelPlanId)}
-              />
+        {isLoading ? (
+          <Grid container justify="center">
+            <Grid item className={classes.loadingIndicator}>
+              <CircularProgress />
             </Grid>
-          ))}
-        </Grid>
+          </Grid>
+        ) : (
+          <>
+            <Grid container justify="center" className={classes.form}>
+              <Grid item xs={12} sm={10}>
+                <TravelPlanForm
+                  employees={employees}
+                  cars={cars}
+                  travelPlans={travelPlans}
+                  onSubmit={onCreationFormSubmit}
+                />
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              justify="center"
+              className={classes.travelPlans}
+              spacing={3}
+            >
+              {travelPlans.map((travelPlan) => (
+                <Grid item key={travelPlan.travelPlanId} xs={12} sm={10} md={6}>
+                  <TravelPlanCard
+                    travelPlan={travelPlan}
+                    onDelete={getDeleteHandler(travelPlan.travelPlanId)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </>
+        )}
       </Grid>
     </Container>
   );

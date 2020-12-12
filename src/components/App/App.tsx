@@ -1,5 +1,7 @@
 import { Switch, Route } from 'react-router-dom';
 import './App.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import Home from 'components/Home';
@@ -13,6 +15,8 @@ function App() {
       <Switch>
         <Route path={Routes.HOME} component={Home} />
       </Switch>
+
+      <ToastContainer limit={3} position="bottom-right" />
     </div>
   );
 }
