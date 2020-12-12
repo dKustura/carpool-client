@@ -16,6 +16,7 @@ import {
   getTravelPlanById,
   getTravelPlans,
   TravelPlan,
+  TravelPlanRequest,
   TravelPlanUpdateRequest,
   updateTravelPlan,
 } from 'api';
@@ -81,17 +82,21 @@ const TravelPlanEdit = (props: Props) => {
     }
   };
 
-  const onEditSubmit = async (updateRequest: TravelPlanUpdateRequest) => {
+  const onEditSubmit = async (request: TravelPlanRequest) => {
     if (!id || isNaN(id as any)) return;
 
     const idNumber = +id;
+    const updateRequest: TravelPlanUpdateRequest = {
+      ...request,
+      travelPlanId: idNumber,
+    };
 
     try {
-      await updateTravelPlan(idNumber, updateRequest);
-      toast.success('✔️ Travel plan created.');
+      await updateTravelPlan(updateRequest);
+      toast.success('✔️ Travel plan updated.');
       history.push(Routes.HOME);
     } catch (e) {
-      toast.error('❌ Error while creating the travel plan.');
+      toast.error('❌ Error while updating the travel plan.');
     }
   };
 

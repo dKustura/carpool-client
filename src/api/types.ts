@@ -34,4 +34,6 @@ export interface TravelPlanRequest {
 
 export interface TravelPlanCreateRequest extends TravelPlanRequest {}
 
-export interface TravelPlanUpdateRequest extends TravelPlanRequest {}
+export interface TravelPlanUpdateRequest extends TravelPlanRequest {
+  travelPlanId: number;
+}

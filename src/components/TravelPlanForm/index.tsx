@@ -59,8 +59,6 @@ const TravelPlanForm = ({
     setSelectedEmployees(selEmployees);
   }, [cars, employees, initialValues]);
 
-  console.log('initialValues', initialValues);
-
   return (
     <div className={classes.formContainer}>
       <Grid container direction="column" alignItems="center">
@@ -80,7 +78,7 @@ const TravelPlanForm = ({
               onSubmit={async (values, actions) => {
                 setIsSubmitting(true);
 
-                const createRequest: TravelPlanRequest = {
+                const request: TravelPlanRequest = {
                   startLocation: values.startLocation!,
                   endLocation: values.endLocation!,
                   startDate: values.startDate!,
@@ -89,11 +87,12 @@ const TravelPlanForm = ({
                   employeeIds: values.employeeIds!,
                 };
 
-                await onSubmit(createRequest);
+                await onSubmit(request);
+
+                setIsSubmitting(false);
+                actions.setSubmitting(false);
 
                 if (!isEdit) {
-                  setIsSubmitting(false);
-                  actions.setSubmitting(false);
                   actions.resetForm();
 
                   // This is neccessary because Material UI Autocomplete component is not easily controlled with formik

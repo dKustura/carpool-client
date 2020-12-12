@@ -30,11 +30,11 @@ export const createTravelPlan = (travelPlan: TravelPlanCreateRequest) => {
   return axios.post(`${SERVICE_URL}/TravelPlan`, travelPlan);
 };
 
-export const updateTravelPlan = (
-  id: number,
-  travelPlan: TravelPlanUpdateRequest,
-) => {
-  return axios.put(`${SERVICE_URL}/TravelPlan/${id}`, travelPlan);
+export const updateTravelPlan = (travelPlan: TravelPlanUpdateRequest) => {
+  return axios.put(
+    `${SERVICE_URL}/TravelPlan/${travelPlan.travelPlanId}`,
+    travelPlan,
+  );
 };
 
 export const deleteTravelPlan = (id: number) => {
