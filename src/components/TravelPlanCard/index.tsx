@@ -1,4 +1,7 @@
+import React, { useState } from 'react';
 import { DateTime } from 'luxon';
+
+// Components
 import {
   Button,
   CircularProgress,
@@ -8,9 +11,6 @@ import {
   Typography,
   useMediaQuery,
 } from '@material-ui/core';
-import { TravelPlan } from 'api/types';
-
-// Components
 import CarCard from 'components/CarCard';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
@@ -18,17 +18,18 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 // Helpers
+import { TravelPlan } from 'api/types';
 import { useStyles } from './styles';
-import React, { useState } from 'react';
 
 interface Props {
   readonly travelPlan: TravelPlan;
+  readonly onEdit: () => Promise<void> | void;
   readonly onDelete: () => Promise<void>;
 }
 
 const localeOptions = { locale: 'hr', ...DateTime.DATE_SHORT };
 
-const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
+const TravelPlanCard = ({ travelPlan, onEdit, onDelete }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const classes = useStyles();
 
@@ -42,6 +43,10 @@ const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+
+  const onEditClick = () => {
+    onEdit();
+  };
 
   const onDeleteClick = async () => {
     setIsDeleting(true);
@@ -122,6 +127,7 @@ const TravelPlanCard = ({ travelPlan, onDelete }: Props) => {
             <Button
               variant="contained"
               color="primary"
+              onClick={onEditClick}
               startIcon={<EditIcon />}
             >
               Edit

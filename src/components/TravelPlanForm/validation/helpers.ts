@@ -52,7 +52,7 @@ export const hasEnoughSeats = (
   );
 };
 
-const toUtcDate = (d: Date | string) => {
+export const toUtcDate = (d: Date | string) => {
   const date = new Date(d);
   return new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),

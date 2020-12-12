@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 // Components
@@ -24,13 +25,15 @@ import {
   TravelPlanCreateRequest,
 } from 'api';
 import { useStyles } from './styles';
-// import { carsData, employeesData, travelPlansData } from './data';
+import { Routes } from 'helpers/contants';
 
 const Home = () => {
   const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const history = useHistory();
   const classes = useStyles();
 
   const getDeleteHandler = (travelPlanId: number) => {
@@ -127,8 +130,14 @@ const Home = () => {
             >
               {travelPlans.map((travelPlan) => (
                 <Grid item key={travelPlan.travelPlanId} xs={12} sm={10} md={6}>
+                  {console.log('travelPlan', travelPlan)}
                   <TravelPlanCard
                     travelPlan={travelPlan}
+                    onEdit={() =>
+                      history.push(
+                        `${Routes.TRAVEL_PLAN}/${travelPlan.travelPlanId}`,
+                      )
+                    }
                     onDelete={getDeleteHandler(travelPlan.travelPlanId)}
                   />
                 </Grid>

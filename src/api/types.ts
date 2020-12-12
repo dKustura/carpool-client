@@ -23,7 +23,7 @@ export interface TravelPlan {
   readonly employees: Employee[];
 }
 
-interface TravelPlanRequest {
+export interface TravelPlanRequest {
   startLocation: string;
   endLocation: string;
   startDate: string | Date;

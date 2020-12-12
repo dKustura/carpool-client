@@ -1,5 +1,5 @@
 import { Field, FieldProps, Form, Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Components
 import {
@@ -19,42 +19,68 @@ import { TravelPlanSchemaType } from './validation/types';
 // Helpers
 import { DEFAULT_FORM_VALUES } from './constants';
 import { useStyles } from './styles';
-import { Car, Employee, TravelPlan, TravelPlanCreateRequest } from 'api';
+import { Car, Employee, TravelPlan, TravelPlanRequest } from 'api';
 import { validate } from './validation';
 
 interface Props {
+  readonly initialValues?: FormValuesType;
   readonly cars: Car[];
   readonly employees: Employee[];
   readonly travelPlans: TravelPlan[];
-  readonly onSubmit: (values: TravelPlanCreateRequest) => Promise<void>;
+  readonly onSubmit: (values: TravelPlanRequest) => Promise<void>;
 }
 
-const TravelPlanForm = ({ cars, employees, travelPlans, onSubmit }: Props) => {
+const TravelPlanForm = ({
+  initialValues = DEFAULT_FORM_VALUES,
+  cars,
+  employees,
+  travelPlans,
+  onSubmit,
+}: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
 
   const classes = useStyles();
 
+  const isEdit = !!initialValues;
+
+  // Painfull but neccessary because Material UI Autocomplete component is not easily controlled with formik
+  useEffect(() => {
+    if (!initialValues) return;
+
+    const selCar =
+      cars.find((car) => car.carId === initialValues.carId) || null;
+    setSelectedCar(selCar);
+
+    const selEmployees = employees.filter((employee) =>
+      initialValues.employeeIds.includes(employee.employeeId),
+    );
+    setSelectedEmployees(selEmployees);
+  }, [cars, employees, initialValues]);
+
+  console.log('initialValues', initialValues);
+
   return (
     <div className={classes.formContainer}>
       <Grid container direction="column" alignItems="center">
         <Grid item xs={12} className={classes.title}>
           <Typography variant="h4" align="center">
-            Create a Travel Plan
+            {isEdit ? 'Edit the' : 'Create a'} Travel Plan
           </Typography>
         </Grid>
         <Grid container justify="center">
           <Grid item xs={12} sm={8}>
             <Formik
-              initialValues={DEFAULT_FORM_VALUES}
+              enableReinitialize
+              initialValues={initialValues}
               validate={(values) =>
                 validate(values, cars, employees, travelPlans)
               }
               onSubmit={async (values, actions) => {
                 setIsSubmitting(true);
 
-                const createRequest: TravelPlanCreateRequest = {
+                const createRequest: TravelPlanRequest = {
                   startLocation: values.startLocation!,
                   endLocation: values.endLocation!,
                   startDate: values.startDate!,
@@ -65,13 +91,15 @@ const TravelPlanForm = ({ cars, employees, travelPlans, onSubmit }: Props) => {
 
                 await onSubmit(createRequest);
 
-                setIsSubmitting(false);
-                actions.setSubmitting(false);
-                actions.resetForm();
+                if (!isEdit) {
+                  setIsSubmitting(false);
+                  actions.setSubmitting(false);
+                  actions.resetForm();
 
-                // This is neccessary because <Autocomplete> component is still in development
-                setSelectedEmployees(DEFAULT_FORM_VALUES.employeeIds);
-                setSelectedCar(null);
+                  // This is neccessary because Material UI Autocomplete component is not easily controlled with formik
+                  setSelectedEmployees(DEFAULT_FORM_VALUES.employeeIds);
+                  setSelectedCar(null);
+                }
               }}
             >
               <Form>
@@ -290,5 +318,7 @@ const TravelPlanForm = ({ cars, employees, travelPlans, onSubmit }: Props) => {
     </div>
   );
 };
+
+export type FormValuesType = TravelPlanSchemaType;
 
 export default TravelPlanForm;

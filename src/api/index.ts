@@ -23,7 +23,7 @@ export const getTravelPlans = () => {
 };
 
 export const getTravelPlanById = (id: number) => {
-  return axios.get<TravelPlan[]>(`${SERVICE_URL}/TravelPlan/${id}`);
+  return axios.get<TravelPlan>(`${SERVICE_URL}/TravelPlan/${id}`);
 };
 
 export const createTravelPlan = (travelPlan: TravelPlanCreateRequest) => {
@@ -34,7 +34,7 @@ export const updateTravelPlan = (
   id: number,
   travelPlan: TravelPlanUpdateRequest,
 ) => {
-  return axios.post(`${SERVICE_URL}/TravelPlan/${id}`, travelPlan);
+  return axios.put(`${SERVICE_URL}/TravelPlan/${id}`, travelPlan);
 };
 
 export const deleteTravelPlan = (id: number) => {

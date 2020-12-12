@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import Home from 'components/Home';
+import TravelPlanEdit from 'components/TravelPlanEdit';
 
 // Helpers
 import { Routes } from 'helpers/contants';
@@ -13,6 +14,7 @@ function App() {
   return (
     <div>
       <Switch>
+        <Route path={`${Routes.TRAVEL_PLAN}/:id`} component={TravelPlanEdit} />
         <Route path={Routes.HOME} component={Home} />
       </Switch>
 
