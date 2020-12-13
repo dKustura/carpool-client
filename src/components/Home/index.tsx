@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -36,9 +36,6 @@ const initialFilterDate = getStartOf(new Date(), 'month');
 
 const Home = () => {
   const [allTravelPlans, setAllTravelPlans] = useState<TravelPlan[]>([]);
-  const [filteredTravelPlans, setFilteredTravelPlans] = useState<TravelPlan[]>(
-    [],
-  );
   const [cars, setCars] = useState<Car[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,18 +63,15 @@ const Home = () => {
     return () => history.push(`${Routes.TRAVEL_PLAN}/${travelPlanId}`);
   };
 
-  const fetchTravelPlans = useCallback(async () => {
+  const fetchTravelPlans = async () => {
     try {
       const travelPlansResponse = await getTravelPlans();
       const travelPlans = travelPlansResponse.data;
       setAllTravelPlans(travelPlans);
-
-      const filteredTravelPlans = filterTravelPlans(travelPlans, filterDate);
-      setFilteredTravelPlans(filteredTravelPlans);
     } catch (e) {
       toast.error('❌ Error while loading travel plans.');
     }
-  }, [filterDate]);
+  };
 
   const fetchCars = async () => {
     try {
@@ -125,10 +119,12 @@ const Home = () => {
   const onFilterDateChange = (date: MaterialUiPickersDate) => {
     const filterDate = date?.toJSDate();
     setFilterDate(filterDate);
-
-    const filteredTravelPlans = filterTravelPlans(allTravelPlans, filterDate);
-    setFilteredTravelPlans(filteredTravelPlans);
   };
+
+  const filteredTravelPlans = useMemo(
+    () => filterTravelPlans(allTravelPlans, filterDate),
+    [allTravelPlans, filterDate],
+  );
 
   return (
     <Container maxWidth="lg">
