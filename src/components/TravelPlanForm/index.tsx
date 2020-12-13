@@ -22,7 +22,6 @@ import { DEFAULT_FORM_VALUES } from './constants';
 import { useStyles } from './styles';
 import { Car, Employee, TravelPlan, TravelPlanRequest } from 'api';
 import { validate } from './validation';
-import CarSvg from 'components/CarCard/CarSvg';
 
 interface Props {
   readonly initialValues?: FormValuesType;

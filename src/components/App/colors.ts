@@ -1,4 +1,4 @@
-export default {
+const colors = {
   success: '#2BA84A',
   error: '#E22712',
   warning: '#FACB0F',
@@ -9,3 +9,5 @@ export default {
   gunMetalBlue: '#263746',
   azureBlue: '#EEFAFB',
 };
+
+export default colors;
