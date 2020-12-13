@@ -47,7 +47,7 @@ const CarCard = ({ car }: Props) => {
         </Grid>
         <div className={classes.carImage}>
           <Grid container justify="center">
-            <Grid item>
+            <Grid item style={{ width: '100%' }}>
               <CarSvg color={car.color} />
             </Grid>
           </Grid>
