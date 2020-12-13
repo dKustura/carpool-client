@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -66,21 +66,18 @@ const Home = () => {
     return () => history.push(`${Routes.TRAVEL_PLAN}/${travelPlanId}`);
   };
 
-  const fetchTravelPlans = async () => {
+  const fetchTravelPlans = useCallback(async () => {
     try {
       const travelPlansResponse = await getTravelPlans();
       const travelPlans = travelPlansResponse.data;
       setAllTravelPlans(travelPlans);
 
-      const filteredTravelPlans = filterTravelPlans(
-        travelPlans,
-        initialFilterDate,
-      );
+      const filteredTravelPlans = filterTravelPlans(travelPlans, filterDate);
       setFilteredTravelPlans(filteredTravelPlans);
     } catch (e) {
       toast.error('❌ Error while loading travel plans.');
     }
-  };
+  }, [filterDate]);
 
   const fetchCars = async () => {
     try {
