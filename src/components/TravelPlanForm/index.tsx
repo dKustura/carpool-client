@@ -12,6 +12,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import SendIcon from '@material-ui/icons/Send';
+import CarIcon from '@material-ui/icons/DriveEta';
 
 // Validation
 import { TravelPlanSchemaType } from './validation/types';
@@ -21,6 +22,7 @@ import { DEFAULT_FORM_VALUES } from './constants';
 import { useStyles } from './styles';
 import { Car, Employee, TravelPlan, TravelPlanRequest } from 'api';
 import { validate } from './validation';
+import CarSvg from 'components/CarCard/CarSvg';
 
 interface Props {
   readonly initialValues?: FormValuesType;
@@ -263,7 +265,6 @@ const TravelPlanForm = ({
                           value={selectedEmployees}
                           options={employees}
                           getOptionLabel={(option) => option.name}
-                          filterSelectedOptions
                           onChange={(_, newValue) => {
                             form.setFieldValue(
                               field.name,
@@ -275,11 +276,18 @@ const TravelPlanForm = ({
                             field.onBlur(e);
                             form.setFieldTouched(field.name);
                           }}
+                          renderOption={(option) => (
+                            <Grid container justify="space-between">
+                              <Grid item>{option.name}</Grid>
+                              <Grid item>{option.isDriver && <CarIcon />}</Grid>
+                            </Grid>
+                          )}
                           renderInput={(params) => (
                             <TextField
                               {...params}
                               variant="outlined"
                               label="Employees"
+                              placeholder="Choose"
                               error={touched && !!error}
                               helperText={touched && error ? error : ' '}
                             />

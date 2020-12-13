@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import CarCard from 'components/CarCard';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
-import DriveEtaIcon from '@material-ui/icons/DriveEta';
+import CarIcon from '@material-ui/icons/DriveEta';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -105,7 +105,7 @@ const TravelPlanCard = ({ travelPlan, onEdit, onDelete }: Props) => {
               <Typography>{employee.name}</Typography>
               {employee.isDriver && (
                 <Tooltip title="Driver">
-                  <DriveEtaIcon />
+                  <CarIcon />
                 </Tooltip>
               )}
             </Grid>
