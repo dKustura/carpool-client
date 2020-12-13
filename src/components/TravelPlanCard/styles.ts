@@ -25,5 +25,8 @@ export const useStyles = makeStyles((theme: Theme) => {
       alignItems: 'center',
       flexWrap: 'wrap',
     },
+    employeesContainer: {
+      paddingBottom: '2rem',
+    },
   });
 });

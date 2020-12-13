@@ -8,8 +8,11 @@ export const useStyles = makeStyles((theme: Theme) => {
     form: {
       padding: '2rem',
     },
-    travelPlans: {
+    travelPlansList: {
       padding: '2rem',
+    },
+    filter: {
+      paddingLeft: '2rem',
     },
     loadingIndicator: {
       marginTop: theme.spacing(10),

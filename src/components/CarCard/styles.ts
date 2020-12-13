@@ -3,10 +3,9 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core';
 export const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     carImage: {
-      opacity: 0.5,
       position: 'absolute',
-      top: '-25%',
-      left: '25%',
+      top: '-30%',
+      left: '30%',
       width: '15rem',
       zIndex: 1,
     },
@@ -22,10 +21,9 @@ export const useStyles = makeStyles((theme: Theme) => {
     },
     nameContainer: {
       paddingTop: '2rem',
+      zIndex: 100,
     },
-    nameTypography: {
-      // fontWeight: 500,
-    },
+    nameTypography: {},
     capacityTypography: {
       fontWeight: 700,
     },

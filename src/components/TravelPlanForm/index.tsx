@@ -31,7 +31,7 @@ interface Props {
 }
 
 const TravelPlanForm = ({
-  initialValues = DEFAULT_FORM_VALUES,
+  initialValues,
   cars,
   employees,
   travelPlans,
@@ -71,7 +71,7 @@ const TravelPlanForm = ({
           <Grid item xs={12} sm={8}>
             <Formik
               enableReinitialize
-              initialValues={initialValues}
+              initialValues={initialValues || DEFAULT_FORM_VALUES}
               validate={(values) =>
                 validate(values, cars, employees, travelPlans)
               }

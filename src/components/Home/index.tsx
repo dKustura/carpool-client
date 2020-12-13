@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -7,10 +7,12 @@ import {
   CircularProgress,
   Container,
   Grid,
+  Switch,
   Typography,
 } from '@material-ui/core';
-import TravelPlanCard from 'components/TravelPlanCard';
+import { DatePicker } from '@material-ui/pickers';
 import TravelPlanForm from 'components/TravelPlanForm';
+import TravelPlanList from 'components/TravelPlanList';
 
 // Helpers
 import {
@@ -25,13 +27,25 @@ import {
   TravelPlanCreateRequest,
 } from 'api';
 import { useStyles } from './styles';
+import { filterTravelPlans } from './helpers';
 import { Routes } from 'helpers/contants';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { getStartOf } from 'helpers/date';
+
+const initialFilterDate = getStartOf(new Date(), 'month');
 
 const Home = () => {
-  const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
+  const [allTravelPlans, setAllTravelPlans] = useState<TravelPlan[]>([]);
+  const [filteredTravelPlans, setFilteredTravelPlans] = useState<TravelPlan[]>(
+    [],
+  );
   const [cars, setCars] = useState<Car[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [filterDate, setFilterDate] = useState<Date | undefined>(
+    initialFilterDate,
+  );
+  const [isFilterEnabled, setIsFilterEnabled] = useState(false);
 
   const history = useHistory();
   const classes = useStyles();
@@ -48,10 +62,21 @@ const Home = () => {
     };
   };
 
+  const getEditHandler = (travelPlanId: number) => {
+    return () => history.push(`${Routes.TRAVEL_PLAN}/${travelPlanId}`);
+  };
+
   const fetchTravelPlans = async () => {
     try {
-      const travelPlans = await getTravelPlans();
-      setTravelPlans(travelPlans.data);
+      const travelPlansResponse = await getTravelPlans();
+      const travelPlans = travelPlansResponse.data;
+      setAllTravelPlans(travelPlans);
+
+      const filteredTravelPlans = filterTravelPlans(
+        travelPlans,
+        initialFilterDate,
+      );
+      setFilteredTravelPlans(filteredTravelPlans);
     } catch (e) {
       toast.error('❌ Error while loading travel plans.');
     }
@@ -96,6 +121,18 @@ const Home = () => {
     }
   };
 
+  const onFilterToggle = () => {
+    setIsFilterEnabled((prevState) => !prevState);
+  };
+
+  const onFilterDateChange = (date: MaterialUiPickersDate) => {
+    const filterDate = date?.toJSDate();
+    setFilterDate(filterDate);
+
+    const filteredTravelPlans = filterTravelPlans(allTravelPlans, filterDate);
+    setFilteredTravelPlans(filteredTravelPlans);
+  };
+
   return (
     <Container maxWidth="lg">
       <Grid container justify="center">
@@ -117,31 +154,46 @@ const Home = () => {
                 <TravelPlanForm
                   employees={employees}
                   cars={cars}
-                  travelPlans={travelPlans}
+                  travelPlans={allTravelPlans}
                   onSubmit={onCreationFormSubmit}
                 />
               </Grid>
             </Grid>
             <Grid
               container
-              justify="center"
-              className={classes.travelPlans}
-              spacing={3}
+              className={classes.filter}
+              spacing={2}
+              alignItems="center"
             >
-              {travelPlans.map((travelPlan) => (
-                <Grid item key={travelPlan.travelPlanId} xs={12} sm={10} md={6}>
-                  {console.log('travelPlan', travelPlan)}
-                  <TravelPlanCard
-                    travelPlan={travelPlan}
-                    onEdit={() =>
-                      history.push(
-                        `${Routes.TRAVEL_PLAN}/${travelPlan.travelPlanId}`,
-                      )
-                    }
-                    onDelete={getDeleteHandler(travelPlan.travelPlanId)}
-                  />
-                </Grid>
-              ))}
+              <Grid item>
+                <Typography display="inline">Filter</Typography>
+                <Switch checked={isFilterEnabled} onChange={onFilterToggle} />
+              </Grid>
+              <Grid
+                item
+                style={!isFilterEnabled ? { visibility: 'hidden' } : undefined}
+              >
+                <DatePicker
+                  autoOk
+                  variant="inline"
+                  format="MM/yyyy"
+                  openTo="year"
+                  inputVariant="outlined"
+                  views={['year', 'month']}
+                  label="Filter by Month"
+                  value={filterDate}
+                  onChange={onFilterDateChange}
+                />
+              </Grid>
+            </Grid>
+            <Grid container className={classes.travelPlansList}>
+              <TravelPlanList
+                travelPlans={
+                  isFilterEnabled ? filteredTravelPlans : allTravelPlans
+                }
+                getEditHandler={getEditHandler}
+                getDeleteHandler={getDeleteHandler}
+              />
             </Grid>
           </>
         )}

@@ -1,4 +1,5 @@
 import { Car, Employee, TravelPlan } from 'api';
+import { isDateBetweenDates } from 'helpers/date';
 
 export const isEmployeeDriver = (employeeId: number, employees: Employee[]) => {
   return (
@@ -52,24 +53,6 @@ export const hasEnoughSeats = (
   );
 };
 
-export const toUtcDate = (d: Date | string) => {
-  const date = new Date(d);
-  return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
-  );
-};
-
-const isDateBewteenDates = (
-  date: Date | string,
-  start: Date | string,
-  end: Date | string,
-) => {
-  const dateDate = toUtcDate(date);
-  const startDate = toUtcDate(start);
-  const endDate = toUtcDate(end);
-  return dateDate >= startDate && dateDate <= endDate;
-};
-
 const isOverlappingAnyTravelPlan = (
   startDate: Date | string,
   endDate: Date | string,
@@ -77,8 +60,8 @@ const isOverlappingAnyTravelPlan = (
 ) => {
   return travelPlans.some(
     (tp) =>
-      isDateBewteenDates(startDate, tp.startDate, tp.endDate) ||
-      isDateBewteenDates(endDate, tp.startDate, tp.endDate),
+      isDateBetweenDates(startDate, tp.startDate, tp.endDate) ||
+      isDateBetweenDates(endDate, tp.startDate, tp.endDate),
   );
 };
 

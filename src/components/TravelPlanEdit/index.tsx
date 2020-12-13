@@ -22,11 +22,9 @@ import {
 } from 'api';
 import { toast } from 'react-toastify';
 import { useStyles } from './styles';
-import { toUtcDate } from 'components/TravelPlanForm/validation/helpers';
+import { toUtcDate } from 'helpers/date';
 
-interface Props {}
-
-const TravelPlanEdit = (props: Props) => {
+const TravelPlanEdit = () => {
   const [travelPlan, setTravelPlan] = useState<TravelPlan>();
   const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
   const [cars, setCars] = useState<Car[]>([]);

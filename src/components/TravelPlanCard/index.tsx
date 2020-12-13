@@ -94,6 +94,7 @@ const TravelPlanCard = ({ travelPlan, onEdit, onDelete }: Props) => {
           spacing={1}
           alignItems={isSmallScreen ? 'center' : 'flex-start'}
           direction="column"
+          className={classes.employeesContainer}
         >
           {travelPlan.employees.map((employee) => (
             <Grid
