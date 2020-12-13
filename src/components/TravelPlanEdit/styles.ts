@@ -11,5 +11,8 @@ export const useStyles = makeStyles((theme: Theme) => {
     loadingIndicator: {
       marginTop: theme.spacing(10),
     },
+    backButton: {
+      padding: '2rem',
+    },
   });
 });

@@ -3,7 +3,8 @@ import { useHistory, useParams } from 'react-router-dom';
 
 // Components
 import TravelPlanForm, { FormValuesType } from 'components/TravelPlanForm';
-import { CircularProgress, Grid } from '@material-ui/core';
+import { CircularProgress, Container, Fab, Grid } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 // Helpers
 import { Routes } from 'helpers/contants';
@@ -92,15 +93,19 @@ const TravelPlanEdit = () => {
     try {
       await updateTravelPlan(updateRequest);
       toast.success('✔️ Travel plan updated.');
-      history.push(Routes.HOME);
+      redirectToHome();
     } catch (e) {
       toast.error('❌ Error while updating the travel plan.');
     }
   };
 
+  const redirectToHome = useCallback(() => {
+    history.push(`${Routes.HOME}`);
+  }, [history]);
+
   useEffect(() => {
     if (!id || isNaN(id as any)) {
-      history.push(Routes.HOME);
+      redirectToHome();
       return;
     }
 
@@ -113,7 +118,7 @@ const TravelPlanEdit = () => {
     ]).then(() => {
       setIsLoading(false);
     });
-  }, [history, id, fetchTravelPlans]);
+  }, [history, id, fetchTravelPlans, redirectToHome]);
 
   const initialFormValues: FormValuesType | undefined = useMemo(() => {
     if (!travelPlan) return undefined;
@@ -138,17 +143,27 @@ const TravelPlanEdit = () => {
       </Grid>
     </Grid>
   ) : (
-    <Grid container justify="center" className={classes.form}>
-      <Grid item xs={12} sm={10}>
-        <TravelPlanForm
-          employees={employees}
-          cars={cars}
-          travelPlans={travelPlans}
-          onSubmit={onEditSubmit}
-          initialValues={initialFormValues}
-        />
+    <Container maxWidth="lg">
+      <Grid container>
+        <Grid item className={classes.backButton}>
+          <Fab variant="extended" color="primary" onClick={redirectToHome}>
+            <ArrowBackIcon />
+            Home
+          </Fab>
+        </Grid>
+        <Grid container justify="center" className={classes.form}>
+          <Grid item xs={12} sm={10}>
+            <TravelPlanForm
+              employees={employees}
+              cars={cars}
+              travelPlans={travelPlans}
+              onSubmit={onEditSubmit}
+              initialValues={initialFormValues}
+            />
+          </Grid>
+        </Grid>
       </Grid>
-    </Grid>
+    </Container>
   );
 };
 
