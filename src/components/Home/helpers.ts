@@ -21,7 +21,8 @@ export const filterTravelPlans = (
 
     return (
       isDateBetweenDates(startDate, monthStart, monthEnd) ||
-      isDateBetweenDates(endDate, monthStart, monthEnd)
+      isDateBetweenDates(endDate, monthStart, monthEnd) ||
+      (startDate <= monthStart && endDate >= monthEnd)
     );
   });
 };
