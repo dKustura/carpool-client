@@ -19,7 +19,7 @@ export const toUtcDate = (d: Date | string) => {
 };
 
 export const getStartOf = (date: Date, unit: DurationUnit) =>
-  DateTime.fromJSDate(date).startOf(unit).toJSDate();
+  toUtcDate(DateTime.fromJSDate(date).startOf(unit).toJSDate());
 
 export const getEndOf = (date: Date, unit: DurationUnit) =>
-  DateTime.fromJSDate(date).endOf(unit).toJSDate();
+  toUtcDate(DateTime.fromJSDate(date).endOf(unit).toJSDate());

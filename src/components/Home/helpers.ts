@@ -1,5 +1,10 @@
 import { TravelPlan } from 'api';
-import { getEndOf, getStartOf, isDateBetweenDates } from 'helpers/date';
+import {
+  getEndOf,
+  getStartOf,
+  isDateBetweenDates,
+  toUtcDate,
+} from 'helpers/date';
 
 export const filterTravelPlans = (
   travelPlans: TravelPlan[],
@@ -11,8 +16,9 @@ export const filterTravelPlans = (
     const monthStart = getStartOf(filterDate, 'month');
     const monthEnd = getEndOf(filterDate, 'month');
 
-    const startDate = new Date(travelPlan.startDate);
-    const endDate = new Date(travelPlan.endDate);
+    const startDate = toUtcDate(new Date(travelPlan.startDate));
+    const endDate = toUtcDate(new Date(travelPlan.endDate));
+
     return (
       isDateBetweenDates(startDate, monthStart, monthEnd) ||
       isDateBetweenDates(endDate, monthStart, monthEnd)
